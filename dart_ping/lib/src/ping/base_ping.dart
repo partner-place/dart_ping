@@ -63,7 +63,6 @@ abstract class BasePing {
   Process? _process;
   late final StreamSubscription<PingData> _sub;
   PingData? _summaryData;
-  final List<PingError> _errors = [];
 
   /// Command to set english locale before running ping command
   Map<String, String> get locale;
@@ -107,14 +106,8 @@ abstract class BasePing {
     _sub = _parsedOutput.listen(
       (event) {
         if (event.response != null || event.error != null) {
-          // Accumulate error if one exists
-          if (event.error != null) {
-            _errors.add(event.error!);
-          }
           _controller.add(event);
         } else if (event.summary != null) {
-          event.summary!.errors.addAll(_errors);
-          _errors.clear();
           _summaryData = event;
         }
       },
@@ -139,7 +132,7 @@ abstract class BasePing {
               transmitted: 0,
               received: 0,
               time: Duration(),
-              errors: [..._errors, error],
+              errors: [error],
             ),
           );
         }
@@ -157,7 +150,6 @@ abstract class BasePing {
       await _controller.close();
     }
 
-    _errors.clear();
     _summaryData = null;
   }
 
@@ -171,7 +163,6 @@ abstract class BasePing {
 
   Future<void> _onCancel() async {
     _process?.kill(ProcessSignal.sigint);
-    _errors.clear();
     _summaryData = null;
   }
 
