@@ -149,8 +149,6 @@ abstract class BasePing {
     if (!_controller.isClosed) {
       await _controller.close();
     }
-
-    _summaryData = null;
   }
 
   /// Interprets exit code into a PingError
@@ -163,7 +161,6 @@ abstract class BasePing {
 
   Future<void> _onCancel() async {
     _process?.kill(ProcessSignal.sigint);
-    _summaryData = null;
   }
 
   Future<bool> stop() async {
