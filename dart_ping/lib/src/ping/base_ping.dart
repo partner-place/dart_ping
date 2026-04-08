@@ -139,7 +139,7 @@ abstract class BasePing {
               transmitted: 0,
               received: 0,
               time: Duration(),
-              errors: [error],
+              errors: [..._errors, error],
             ),
           );
         }
